@@ -1,5 +1,6 @@
-from rest_framework import generics
-from users.serializers import UserSerializer
+from rest_framework import generics, authentication, permissions
+from rest_framework.authtoken.views import ObtainAuthToken 
+from users.serializers import UserSerializer, AuthTokenSerializer
 from users.models import User
 
 # Create your views here.
@@ -10,8 +11,16 @@ class CreateUserView(generics.CreateAPIView):
 
 class listUsersView(generics.ListAPIView):
     serializer_class = UserSerializer
-    queryset = User.object.all()
+    queryset = User.objects.all()
     
-    '''def get_queryset(self):
-        return User.objects.all()'''
+class RetreiveUpdateUserView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user
+    
+class CreateTokenView(ObtainAuthToken):
+    serializer_class = AuthTokenSerializer
     
